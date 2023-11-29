@@ -11,25 +11,26 @@ idc=redis.Redis(host='172.16.0.60',port=6379,decode_responses=True,password='Tid
 
 
 def migration(keys):
-    print("keys~~~{0}".format(keys))
 
     for key in keys:
         ttl = idc.ttl(str(key));
         if ttl < 0: # required as you can't create keys witn ttl -1, for no ttl , you can give 0 value.
+            print("KEY {0} has no TTL".format(str(key)))
             ttl = 0
-            #print("KEY {0} has no TTL".format(str(key)))
         else:
             ttl *= 1000
         #print('dump {0} and ttl is {1}'.format(str(key),ttl))
         value =idc.dump(str(key))
+        
         #print('restore {0} and ttl is {1}'.format(str(key),ttl))
         dst.restore(str(key),ttl,value,replace=True)
 
 def lambda_handler(event, context):
  
     #data migrations cluster to cluster
-    #cur = 0
     cur = 0
+    #cur 63662
+    #cur = 120727
     key_cnt=0
     flag=0;
     
@@ -43,7 +44,7 @@ def lambda_handler(event, context):
         #cur=list(scans[0].values())[0]
         
         #idc scan
-        scans=idc.scan(cursor=cur,count=100)
+        scans=idc.scan(cursor=cur,count=1000)
         keys=scans[-1]
         cur=scans[0]
         migration(keys)
@@ -56,11 +57,11 @@ def lambda_handler(event, context):
         #migration(keys)
         flag+=1;
         key_cnt+=len(keys)
-
         print("last cursor is {0}".format(cur))
+        
         if cur == 0:
             break;
-        elif flag >= 4:
+        elif flag >= 1:
             break;
     
     print("total key count is {0}".format(key_cnt))
