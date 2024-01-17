@@ -3,9 +3,9 @@ import redis
 import logging
 from multiprocessing import Process
 
-#src = redis.cluster.RedisCluster(host='dev-p-redis.uaz5x4.clustercfg.apn2.cache.amazonaws.com',port=6379,decode_responses=True)
-dst = redis.cluster.RedisCluster(host='tmp-redis.uaz5x4.clustercfg.apn2.cache.amazonaws.com',port=6379,decode_responses=True)
+#src = redis.cluster.RedisCluster(host='<ElastiCache Endpoint>',port=6379,decode_responses=True)
 
+dst = redis.cluster.RedisCluster(host='<ElastiCache Endpoint>',port=6379,decode_responses=True)
 idc=redis.Redis(host='172.16.0.60',port=6379,decode_responses=True,password='test1234')
 
 
